@@ -1,6 +1,8 @@
 using AutoMapper;
 using CRM.API.Data;
+using CRM.API.PipelineBehaviors;
 using CRM.API.Repositories;
+using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,6 +32,10 @@ namespace CRM.API
             services.AddAutoMapper(typeof(Startup));
 
             services.AddMediatR(typeof(Startup));
+
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+            services.AddValidatorsFromAssembly(typeof(Startup).Assembly);
 
             services.AddControllers();
         }
