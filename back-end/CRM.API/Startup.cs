@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using CRM.API.Data;
+using MediatR;
 
 namespace CRM.API
 {
@@ -27,6 +28,8 @@ namespace CRM.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<CRMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CRMContext")));
+
+            services.AddMediatR(typeof(Startup));
 
             services.AddControllers();
         }
