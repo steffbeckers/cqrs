@@ -1,4 +1,6 @@
+using AutoMapper;
 using CRM.API.Data;
+using CRM.API.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -22,6 +24,10 @@ namespace CRM.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<CRMContext>(options => options.UseSqlServer(Configuration.GetConnectionString("CRMContext")));
+
+            services.AddScoped<ContactsRepository>();
+
+            services.AddAutoMapper(typeof(Startup));
 
             services.AddMediatR(typeof(Startup));
 

@@ -1,5 +1,9 @@
-﻿using CRM.API.Data;
+﻿using CRM.API.Commands;
+using CRM.API.Data;
+using CRM.API.DTOs;
 using CRM.API.Models;
+using CRM.API.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -13,97 +17,102 @@ namespace CRM.API.Controllers
     [ApiController]
     public class ContactsController : ControllerBase
     {
-        private readonly CRMContext context;
+        private readonly IMediator mediator;
 
-        public ContactsController(CRMContext context)
+        public ContactsController(IMediator mediator)
         {
-            this.context = context;
+            this.mediator = mediator;
         }
 
         // GET: api/Contacts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Contact>>> GetContact()
+        public async Task<ActionResult<IEnumerable<ContactDTO>>> GetAllContacts()
         {
-            return await context.Contact.ToListAsync();
+            GetAllContactsQuery query = new GetAllContactsQuery();
+
+            return Ok(await mediator.Send(query));
         }
 
         // GET: api/Contacts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Contact>> GetContact(Guid id)
+        public async Task<ActionResult<ContactDTO>> GetContactById([FromRoute] Guid id)
         {
-            var contact = await context.Contact.FindAsync(id);
+            GetContactByIdQuery query = new GetContactByIdQuery(id);
+
+            ContactDTO contact = await mediator.Send(query);
 
             if (contact == null)
             {
                 return NotFound();
             }
 
-            return contact;
-        }
-
-        // PUT: api/Contacts/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutContact(Guid id, Contact contact)
-        {
-            if (id != contact.Id)
-            {
-                return BadRequest();
-            }
-
-            context.Entry(contact).State = EntityState.Modified;
-
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ContactExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok(contact);
         }
 
         // POST: api/Contacts
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for
-        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
         [HttpPost]
-        public async Task<ActionResult<Contact>> PostContact(Contact contact)
+        public async Task<ActionResult<ContactDTO>> CreateContact([FromBody] CreateContactCommand command)
         {
-            context.Contact.Add(contact);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetContact", new { id = contact.Id }, contact);
-        }
-
-        // DELETE: api/Contacts/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<Contact>> DeleteContact(Guid id)
-        {
-            var contact = await context.Contact.FindAsync(id);
-            if (contact == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest(ModelState);
             }
 
-            context.Contact.Remove(contact);
-            await context.SaveChangesAsync();
+            ContactDTO contact = await mediator.Send(command);
 
-            return contact;
+            return CreatedAtAction("GetContactById", new { id = contact.Id }, contact);
         }
 
-        private bool ContactExists(Guid id)
-        {
-            return context.Contact.Any(e => e.Id == id);
-        }
+        // TODO
+        //// PUT: api/Contacts/5
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateContact(Guid id, Contact contact)
+        //{
+        //    if (id != contact.Id)
+        //    {
+        //        return BadRequest();
+        //    }
+
+        //    context.Entry(contact).State = EntityState.Modified;
+
+        //    try
+        //    {
+        //        await context.SaveChangesAsync();
+        //    }
+        //    catch (DbUpdateConcurrencyException)
+        //    {
+        //        if (!ContactExists(id))
+        //        {
+        //            return NotFound();
+        //        }
+        //        else
+        //        {
+        //            throw;
+        //        }
+        //    }
+
+        //    return NoContent();
+        //}
+
+        //// DELETE: api/Contacts/5
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult<Contact>> DeleteContact([FromRoute] Guid id)
+        //{
+        //    var contact = await context.Contact.FindAsync(id);
+        //    if (contact == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    context.Contact.Remove(contact);
+        //    await context.SaveChangesAsync();
+
+        //    return contact;
+        //}
+
+        //private bool ContactExists(Guid id)
+        //{
+        //    return context.Contact.Any(e => e.Id == id);
+        //}
     }
 }
