@@ -9,6 +9,6 @@ namespace CRM.API.Data
         {
         }
 
-        public DbSet<Contact> Contact { get; set; }
+        public DbSet<Contact> Contacts { get; set; }
     }
 }

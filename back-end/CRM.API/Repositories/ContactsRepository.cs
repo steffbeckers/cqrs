@@ -21,13 +21,13 @@ namespace CRM.API.Repositories
         // Should be from generic base
         public async Task<List<Contact>> GetAsync()
         {
-            return await context.Contact.ToListAsync();
+            return await context.Contacts.ToListAsync();
         }
 
         // Should be from generic base
         public async Task<Contact> GetByIdAsync(Guid id)
         {
-            return await context.Contact.FindAsync(id);
+            return await context.Contacts.FindAsync(id);
         }
 
         public async Task<Contact> InsertAsync(Contact contact)
