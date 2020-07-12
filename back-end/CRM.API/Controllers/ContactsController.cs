@@ -1,12 +1,11 @@
-﻿using System;
+﻿using CRM.API.Data;
+using CRM.API.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using CRM.API.Data;
-using CRM.API.Models;
 
 namespace CRM.API.Controllers
 {
