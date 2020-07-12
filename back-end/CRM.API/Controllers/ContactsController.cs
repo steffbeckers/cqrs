@@ -1,14 +1,11 @@
-﻿using CRM.API.Commands;
-using CRM.API.Data;
+﻿using AutoMapper;
+using CRM.API.Commands;
 using CRM.API.DTOs;
-using CRM.API.Models;
 using CRM.API.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CRM.API.Controllers
@@ -18,10 +15,12 @@ namespace CRM.API.Controllers
     public class ContactsController : ControllerBase
     {
         private readonly IMediator mediator;
+        private readonly IMapper mapper;
 
-        public ContactsController(IMediator mediator)
+        public ContactsController(IMediator mediator, IMapper mapper)
         {
             this.mediator = mediator;
+            this.mapper = mapper;
         }
 
         // GET: api/Contacts
@@ -51,12 +50,9 @@ namespace CRM.API.Controllers
 
         // POST: api/Contacts
         [HttpPost]
-        public async Task<ActionResult<ContactDTO>> CreateContact([FromBody] CreateContactCommand command)
+        public async Task<ActionResult<ContactDTO>> CreateContact([FromBody] ContactCreateDTO contactCreateDTO)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+            CreateContactCommand command = mapper.Map<CreateContactCommand>(contactCreateDTO);
 
             ContactDTO contact = await mediator.Send(command);
 

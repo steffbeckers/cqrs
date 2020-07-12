@@ -10,6 +10,8 @@ namespace CRM.API.Mappers
         public AutoMapping()
         {
             CreateMap<Contact, ContactDTO>();
+            CreateMap<ContactDTO, Contact>();
+            CreateMap<ContactCreateDTO, CreateContactCommand>();
             CreateMap<CreateContactCommand, Contact>();
         }
     }
